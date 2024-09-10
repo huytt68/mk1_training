@@ -2,7 +2,7 @@
 FROM node:16
 
 # Thiết lập thư mục làm việc cho ứng dụng bên trong container
-WORKDIR /usr/src/app
+WORKDIR /usr/src
 
 # Sao chép file package.json và package-lock.json vào container
 COPY package*.json ./
@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Expose cổng mà ứng dụng Node.js sẽ chạy
-EXPOSE 3000
+EXPOSE 8080
 
 # Lệnh để chạy ứng dụng khi container khởi động
-CMD ["node", "app.js"]
+CMD ["npm", "start"]
