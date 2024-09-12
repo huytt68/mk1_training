@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
 				primaryKey: true,
 				type: DataTypes.INTEGER,
 			},
+			email: {
+				type: DataTypes.STRING,
+				allowNull: false,
+			},
 			username: {
 				type: DataTypes.STRING,
 				allowNull: false,
@@ -17,10 +21,19 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.STRING,
 				allowNull: false,
 			},
+			role: {
+				type: DataTypes.STRING,
+				allowNull: false,
+				defaultValue: 'user',
+			},
+			refreshToken: {
+				type: DataTypes.TEXT,
+				allowNull: true,
+			},
 		},
 		{
 			tableName: 'User',
-			timestamps: true,
+			timestamps: false,
 		}
 	);
 

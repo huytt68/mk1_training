@@ -1,10 +1,10 @@
 const Sequelize = require('sequelize');
 
 const sequelize = new Sequelize('dev_db', 'root', 'password', {
-	host: 'mysql',
+	host: 'localhost',
 	dialect: 'mysql',
 	logging: false,
-	port: 3306,
+	port: process.env.MYSQL_PORT || 3306,
 });
 
 const connectDB = async () => {
