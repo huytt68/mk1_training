@@ -34,9 +34,7 @@ const loginUser = async (req, res, next) => {
 		if (!result.success) {
 			return res.status(400).json({ message: result.message });
 		}
-		return res
-			.status(200)
-			.json({ message: result.message, accessToken: result.accessToken });
+		return res.status(200).json({ message: result.message, accessToken: result.accessToken });
 	} catch (error) {
 		if (error instanceof CustomError) {
 			next(error);

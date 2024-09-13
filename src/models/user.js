@@ -4,38 +4,44 @@ module.exports = (sequelize, DataTypes) => {
 		'User',
 		{
 			id: {
-				allowNull: false,
-				autoIncrement: true,
-				primaryKey: true,
 				type: DataTypes.INTEGER,
-			},
-			email: {
-				type: DataTypes.STRING,
-				allowNull: false,
+				primaryKey: true,
+				autoIncrement: true,
 			},
 			username: {
 				type: DataTypes.STRING,
 				allowNull: false,
+				unique: true,
 			},
 			password: {
 				type: DataTypes.STRING,
 				allowNull: false,
 			},
-			role: {
+			email: {
 				type: DataTypes.STRING,
 				allowNull: false,
-				defaultValue: 'user',
+				unique: true,
 			},
-			refreshToken: {
-				type: DataTypes.TEXT,
-				allowNull: true,
+			role_id: {
+				type: DataTypes.INTEGER,
+				allowNull: false,
+			},
+			created_at: {
+				type: DataTypes.DATE,
+				defaultValue: DataTypes.NOW,
 			},
 		},
 		{
-			tableName: 'User',
+			tableName: 'users',
 			timestamps: false,
 		}
 	);
+
+	User.associate = (models) => {
+		User.belongsTo(models.Role, { foreignKey: 'role_id' });
+		User.hasOne(models.Cart, { foreignKey: 'user_id' });
+		User.hasMany(models.Order, { foreignKey: 'user_id' });
+	};
 
 	return User;
 };

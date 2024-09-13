@@ -1,26 +1,23 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-	const Product = sequelize.define(
-		'Product',
+	const Order = sequelize.define(
+		'Order',
 		{
-			product_id: {
+			order_id: {
 				type: DataTypes.INTEGER,
 				primaryKey: true,
 				autoIncrement: true,
 			},
-			name: {
-				type: DataTypes.STRING,
+			user_id: {
+				type: DataTypes.INTEGER,
 				allowNull: false,
 			},
-			price: {
+			total_amount: {
 				type: DataTypes.DECIMAL(10, 2),
 				allowNull: false,
 			},
-			stock: {
-				type: DataTypes.INTEGER,
-			},
-			description: {
-				type: DataTypes.TEXT,
+			order_status: {
+				type: DataTypes.STRING,
 			},
 			created_at: {
 				type: DataTypes.DATE,
@@ -32,17 +29,17 @@ module.exports = (sequelize, DataTypes) => {
 			},
 		},
 		{
-			tableName: 'products',
+			tableName: 'orders',
 			timestamps: true,
 			createdAt: 'created_at',
 			updatedAt: 'updated_at',
 		}
 	);
 
-	Product.associate = (models) => {
-		Product.hasMany(models.CartItem, { foreignKey: 'product_id' });
-		Product.hasMany(models.OrderItem, { foreignKey: 'product_id' });
+	Order.associate = (models) => {
+		Order.belongsTo(models.User, { foreignKey: 'user_id' });
+		Order.hasMany(models.OrderItem, { foreignKey: 'order_id' });
 	};
 
-	return Product;
+	return Order;
 };
