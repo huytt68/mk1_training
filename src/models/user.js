@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
 			role_id: {
 				type: DataTypes.INTEGER,
 				allowNull: false,
+				defaultValue: 1,
 			},
 			created_at: {
 				type: DataTypes.DATE,
@@ -39,8 +40,9 @@ module.exports = (sequelize, DataTypes) => {
 
 	User.associate = (models) => {
 		User.belongsTo(models.Role, { foreignKey: 'role_id' });
-		User.hasOne(models.Cart, { foreignKey: 'user_id' });
-		User.hasMany(models.Order, { foreignKey: 'user_id' });
+		User.hasOne(models.Cart, { foreignKey: 'id' });
+		User.hasMany(models.Order, { foreignKey: 'id' });
+		User.hasMany(models.RefreshToken, { foreignKey: 'id' });
 	};
 
 	return User;

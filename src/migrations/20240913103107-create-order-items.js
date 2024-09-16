@@ -4,10 +4,10 @@ module.exports = {
 	up: async (queryInterface, Sequelize) => {
 		await queryInterface.createTable('order_items', {
 			id: {
-				allowNull: false,
-				autoIncrement: true,
-				primaryKey: true,
 				type: Sequelize.INTEGER,
+				primaryKey: true,
+				autoIncrement: true,
+				allowNull: false,
 			},
 			order_id: {
 				type: Sequelize.INTEGER,
@@ -16,6 +16,7 @@ module.exports = {
 					model: 'orders',
 					key: 'id',
 				},
+				onDelete: 'CASCADE',
 			},
 			product_id: {
 				type: Sequelize.INTEGER,
@@ -24,6 +25,7 @@ module.exports = {
 					model: 'products',
 					key: 'id',
 				},
+				onDelete: 'CASCADE',
 			},
 			quantity: {
 				type: Sequelize.INTEGER,
@@ -32,11 +34,6 @@ module.exports = {
 			price: {
 				type: Sequelize.DECIMAL(10, 2),
 				allowNull: false,
-			},
-			created_at: {
-				allowNull: false,
-				type: Sequelize.DATE,
-				defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
 			},
 		});
 	},

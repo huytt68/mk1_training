@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
 	const Order = sequelize.define(
 		'Order',
 		{
-			order_id: {
+			id: {
 				type: DataTypes.INTEGER,
 				primaryKey: true,
 				autoIncrement: true,
@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.DECIMAL(10, 2),
 				allowNull: false,
 			},
-			order_status: {
+			status: {
 				type: DataTypes.STRING,
 			},
 			created_at: {
@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
 
 	Order.associate = (models) => {
 		Order.belongsTo(models.User, { foreignKey: 'user_id' });
-		Order.hasMany(models.OrderItem, { foreignKey: 'order_id' });
+		Order.hasMany(models.OrderItem, { foreignKey: 'id' });
 	};
 
 	return Order;

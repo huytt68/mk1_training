@@ -2,7 +2,7 @@
 
 module.exports = {
 	up: async (queryInterface, Sequelize) => {
-		await queryInterface.createTable('orders', {
+		await queryInterface.createTable('refresh_tokens', {
 			id: {
 				type: Sequelize.INTEGER,
 				primaryKey: true,
@@ -18,28 +18,23 @@ module.exports = {
 				},
 				onDelete: 'CASCADE',
 			},
-			total_amount: {
-				type: Sequelize.DECIMAL(10, 2),
+			refresh_token: {
+				type: Sequelize.TEXT,
 				allowNull: false,
 			},
-			status: {
-				type: Sequelize.STRING,
-			},
-			created_at: {
+			issued_at: {
 				type: Sequelize.DATE,
 				allowNull: false,
 				defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
 			},
-			updated_at: {
+			expires_at: {
 				type: Sequelize.DATE,
 				allowNull: false,
-				defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-				onUpdate: Sequelize.literal('CURRENT_TIMESTAMP'),
 			},
 		});
 	},
 
 	down: async (queryInterface, Sequelize) => {
-		await queryInterface.dropTable('orders');
+		await queryInterface.dropTable('refresh_tokens');
 	},
 };

@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
 	const Product = sequelize.define(
 		'Product',
 		{
-			product_id: {
+			id: {
 				type: DataTypes.INTEGER,
 				primaryKey: true,
 				autoIncrement: true,
@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
 			},
 			stock: {
 				type: DataTypes.INTEGER,
+				defaultValue: 0,
 			},
 			description: {
 				type: DataTypes.TEXT,
@@ -40,8 +41,8 @@ module.exports = (sequelize, DataTypes) => {
 	);
 
 	Product.associate = (models) => {
-		Product.hasMany(models.CartItem, { foreignKey: 'product_id' });
-		Product.hasMany(models.OrderItem, { foreignKey: 'product_id' });
+		Product.hasMany(models.CartItem, { foreignKey: 'id' });
+		Product.hasMany(models.OrderItem, { foreignKey: 'id' });
 	};
 
 	return Product;

@@ -3,12 +3,12 @@ const CustomError = require('../utils/CustomError');
 const ERROR_CODES = require('../utils/errorCodes');
 
 const register = async (req, res, next) => {
-	const { email, username, password } = req.body;
+	const { username, password, email } = req.body;
 	if (!email || !username || !password) {
 		return next(new CustomError(ERROR_CODES.INVALID_REQUEST));
 	}
 	try {
-		const result = await userService.register(email, username, password);
+		const result = await userService.register(username, password, email);
 		if (!result.success) {
 			res.status(400).json({ message: result.message });
 		}
