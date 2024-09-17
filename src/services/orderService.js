@@ -16,6 +16,7 @@ const createOrder = async (user_id) => {
 		});
 		// Cap nhat status cua cart
 		await cart.update({ status: 'completed' });
+		await db.Cart.create({ user_id, status: 'active' });
 		return { success: true, message: 'Order created successfully' };
 	} catch (error) {
 		console.error('Error creating cart:', error);

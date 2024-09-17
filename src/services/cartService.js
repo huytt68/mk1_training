@@ -65,6 +65,7 @@ const getCart = async (user_id) => {
 
 const getCartItem = async (user_id) => {
 	try {
+		const cart = await db.Cart.findOne({ where: { user_id, status: 'active' } });
 		const cartItems = await db.CartItem.findAll({
 			attributes: ['id', 'quantity'],
 			include: [
@@ -72,6 +73,9 @@ const getCartItem = async (user_id) => {
 					model: db.Cart,
 					as: 'cart',
 					attributes: [],
+					where: {
+						id: cart.id,
+					},
 					include: [
 						{
 							model: db.User,
@@ -95,7 +99,6 @@ const getCartItem = async (user_id) => {
 				return (sum += parseFloat(item.quantity) * parseFloat(item.product.price));
 			}, 0)
 			.toFixed(2);
-		const cart = await db.Cart.findOne({ where: { user_id, status: 'active' } });
 		cart.total_amount = total_amount;
 		await cart.save();
 
