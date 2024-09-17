@@ -8,16 +8,22 @@ module.exports = (sequelize, DataTypes) => {
 				primaryKey: true,
 				autoIncrement: true,
 			},
+			cart_id: {
+				type: DataTypes.INTEGER,
+				allowNull: false,
+			},
 			user_id: {
 				type: DataTypes.INTEGER,
 				allowNull: false,
 			},
 			total_amount: {
-				type: DataTypes.DECIMAL(10, 2),
+				type: DataTypes.DECIMAL(20, 2),
 				allowNull: false,
+				defaultValue: 0,
 			},
 			status: {
-				type: DataTypes.STRING,
+				type: DataTypes.ENUM('pending', 'paid', 'shipped', 'delivered', 'cancelled'),
+				defaultValue: 'pending',
 			},
 			created_at: {
 				type: DataTypes.DATE,
@@ -37,8 +43,8 @@ module.exports = (sequelize, DataTypes) => {
 	);
 
 	Order.associate = (models) => {
-		Order.belongsTo(models.User, { foreignKey: 'user_id' });
-		Order.hasMany(models.OrderItem, { foreignKey: 'id' });
+		Order.belongsTo(models.User, { as: 'user', foreignKey: 'user_id' });
+		Order.belongsTo(models.Cart, { as: 'cart', foreignKey: 'cart_id' });
 	};
 
 	return Order;

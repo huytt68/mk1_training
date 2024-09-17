@@ -1,12 +1,13 @@
 const { where } = require('sequelize');
 const db = require('../models');
 
-const addProduct = async (name, price, amount = 0) => {
+const addProduct = async (name, price, stock = 0, description) => {
 	try {
 		const newProduct = await db.Product.create({
-			name: name,
-			price: price,
-			amount: amount,
+			name,
+			price,
+			stock,
+			description,
 		});
 		return { message: 'Product added successfully', product: newProduct };
 	} catch (error) {
@@ -40,13 +41,14 @@ const getProductById = async (pid) => {
 	}
 };
 
-const updateProduct = async (pid, newName, newPrice, newAmount) => {
+const updateProduct = async (pid, name, price, stock, description) => {
 	try {
 		const [updated] = await db.Product.update(
 			{
-				name: newName,
-				price: newPrice,
-				amount: newAmount,
+				name,
+				price,
+				stock,
+				description,
 			},
 			{
 				where: { id: pid },
@@ -84,9 +86,9 @@ const deleteProduct = async (pid) => {
 };
 
 module.exports = {
+	addProduct,
 	getProducts,
 	getProductById,
-	addProduct,
 	updateProduct,
 	deleteProduct,
 };

@@ -83,13 +83,10 @@ const loginUser = async (username, password, res) => {
 const refreshAccessToken = async (refreshToken) => {
 	try {
 		const userId = decodeRefreshToken(refreshToken);
-		// console.log(userId);
 		const users = await db.RefreshToken.findAll({
 			attributes: ['refresh_token', 'expires_at'],
 			where: { user_id: userId },
 		});
-		// console.log(users);
-		// console.log(users.length);
 		if (users.length === 0) {
 			return { success: false, message: 'Invalid refresh token' };
 		}
@@ -108,8 +105,8 @@ const refreshAccessToken = async (refreshToken) => {
 				return { success: true, accessToken };
 			}
 		}
-	} catch (err) {
-		console.error(err);
+	} catch (error) {
+		console.error(error);
 		return { success: false, message: 'Invalid refresh token' };
 	}
 };

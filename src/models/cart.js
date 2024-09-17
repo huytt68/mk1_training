@@ -12,6 +12,15 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.INTEGER,
 				allowNull: false,
 			},
+			total_amount: {
+				type: DataTypes.DECIMAL(20, 2),
+				allowNull: false,
+				defaultValue: 0,
+			},
+			status: {
+				type: DataTypes.ENUM('active', 'completed', 'cancelled'),
+				defaultValue: 'active',
+			},
 			created_at: {
 				type: DataTypes.DATE,
 				defaultValue: DataTypes.NOW,
@@ -30,8 +39,9 @@ module.exports = (sequelize, DataTypes) => {
 	);
 
 	Cart.associate = (models) => {
-		Cart.belongsTo(models.User, { foreignKey: 'user_id' });
-		Cart.hasMany(models.CartItem, { foreignKey: 'cart_id' });
+		Cart.belongsTo(models.User, { as: 'user', foreignKey: 'user_id' });
+		Cart.hasMany(models.CartItem, { as: 'cartitem', foreignKey: 'id' });
+		Cart.hasOne(models.Order, { as: 'order', foreignKey: 'id' });
 	};
 
 	return Cart;

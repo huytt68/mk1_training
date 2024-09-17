@@ -19,21 +19,32 @@ module.exports = (sequelize, DataTypes) => {
 			quantity: {
 				type: DataTypes.INTEGER,
 				allowNull: false,
+				defaultValue: 1,
 			},
 			price: {
-				type: DataTypes.DECIMAL(10, 2),
+				type: DataTypes.DECIMAL(20, 2),
 				allowNull: false,
+			},
+			created_at: {
+				type: DataTypes.DATE,
+				defaultValue: DataTypes.NOW,
+			},
+			updated_at: {
+				type: DataTypes.DATE,
+				defaultValue: DataTypes.NOW,
 			},
 		},
 		{
 			tableName: 'cart_items',
-			timestamps: false,
+			timestamps: true,
+			createdAt: 'created_at',
+			updatedAt: 'updated_at',
 		}
 	);
 
 	CartItem.associate = (models) => {
-		CartItem.belongsTo(models.Cart, { foreignKey: 'cart_id' });
-		CartItem.belongsTo(models.Product, { foreignKey: 'product_id' });
+		CartItem.belongsTo(models.Cart, { as: 'cart', foreignKey: 'cart_id' });
+		CartItem.belongsTo(models.Product, { as: 'product', foreignKey: 'product_id' });
 	};
 
 	return CartItem;

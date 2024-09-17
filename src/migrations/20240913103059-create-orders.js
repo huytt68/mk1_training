@@ -9,6 +9,15 @@ module.exports = {
 				autoIncrement: true,
 				allowNull: false,
 			},
+			cart_id: {
+				type: Sequelize.INTEGER,
+				allowNull: false,
+				references: {
+					model: 'carts',
+					key: 'id',
+				},
+				onDelete: 'CASCADE',
+			},
 			user_id: {
 				type: Sequelize.INTEGER,
 				allowNull: false,
@@ -19,8 +28,9 @@ module.exports = {
 				onDelete: 'CASCADE',
 			},
 			total_amount: {
-				type: Sequelize.DECIMAL(10, 2),
+				type: Sequelize.DECIMAL(20, 2),
 				allowNull: false,
+				defaultValue: 0,
 			},
 			status: {
 				type: Sequelize.STRING,

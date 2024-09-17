@@ -39,10 +39,10 @@ module.exports = (sequelize, DataTypes) => {
 	);
 
 	User.associate = (models) => {
-		User.belongsTo(models.Role, { foreignKey: 'role_id' });
-		User.hasOne(models.Cart, { foreignKey: 'id' });
-		User.hasMany(models.Order, { foreignKey: 'id' });
-		User.hasMany(models.RefreshToken, { foreignKey: 'id' });
+		User.belongsTo(models.Role, { as: 'role', foreignKey: 'role_id' });
+		User.hasMany(models.Cart, { as: 'cart', foreignKey: 'id' });
+		User.hasMany(models.Order, { as: 'order', foreignKey: 'id' });
+		User.hasMany(models.RefreshToken, { as: 'token', foreignKey: 'id' });
 	};
 
 	return User;

@@ -30,10 +30,22 @@ module.exports = {
 			quantity: {
 				type: Sequelize.INTEGER,
 				allowNull: false,
+				defaultValue: 1,
 			},
 			price: {
-				type: Sequelize.DECIMAL(10, 2),
+				type: Sequelize.DECIMAL(20, 2),
 				allowNull: false,
+			},
+			created_at: {
+				allowNull: false,
+				type: Sequelize.DATE,
+				defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+			},
+			updated_at: {
+				type: Sequelize.DATE,
+				allowNull: false,
+				defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+				onUpdate: Sequelize.literal('CURRENT_TIMESTAMP'),
 			},
 		});
 	},
