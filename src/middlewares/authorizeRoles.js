@@ -3,19 +3,14 @@ const db = require('../models');
 const authorizeRoles = (...roles) => {
 	return async (req, res, next) => {
 		try {
-			// console.log(req.user._id);
+			const { _id, role_id } = req.user;
 			const user = await db.User.findOne({
-				where: { id: req.user._id },
-				include: [{ model: db.Role, as: 'role', attributes: [] }],
-				attributes: {
-					include: [[db.Sequelize.col('role.name'), 'role']],
-				},
-				raw: true,
+				where: { id: _id, role_id },
+				include: [{ model: db.Role, as: 'role', attributes: ['name'] }],
 			});
-			// console.log(user);
-			if (!user || !roles.includes(user.role)) {
+			if (!user || !roles.includes(user.role.name)) {
 				console.log('REQUIRED: ', roles);
-				console.log('have: ', user.role);
+				console.log('CURRENT: ', user.role.name);
 				return res.status(403).json({ message: 'Access denied: Insufficient permissions' });
 			}
 

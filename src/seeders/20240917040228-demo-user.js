@@ -8,7 +8,7 @@ module.exports = {
 				{
 					username: 'admin',
 					password: '$2b$10$uSqFA8VN2OPxYyMECVpUpu9vauq40q3KeFXoh.QYxq7C74ESPmnXa',
-					email: 'admin@admin.com',
+					email: 'trantronghuy68@gmail.com',
 					role_id: 2,
 				},
 				{
