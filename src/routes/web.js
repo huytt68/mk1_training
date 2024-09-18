@@ -25,12 +25,13 @@ const initRoutes = (app) => {
 	router.post('/logout', userCtrl.logout);
 
 	router.post('/cart', verifyToken, authorizeRoles('user'), cartCtrl.createCart);
-	router.post('/cart/add', verifyToken, authorizeRoles('user'), cartCtrl.addProductToCart);
+	router.post('/cart/add', verifyToken, authorizeRoles('user'), cartCtrl.addToCart);
 	router.get('/cart', verifyToken, authorizeRoles('user'), cartCtrl.getCart);
 	router.get('/cartitem', verifyToken, authorizeRoles('user'), cartCtrl.getCartItem);
 
 	router.post('/order', verifyToken, authorizeRoles('user'), orderCtrl.createOrder);
-	router.get('/order', verifyToken, authorizeRoles('user'), orderCtrl.getUserOrder);
+	router.get('/order', verifyToken, authorizeRoles('user'), orderCtrl.getUserOrders);
+	router.get('/order/all', verifyToken, authorizeRoles('admin'), orderCtrl.getAllOrders);
 
 	return app.use('/', router);
 };

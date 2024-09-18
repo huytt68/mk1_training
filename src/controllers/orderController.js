@@ -12,7 +12,7 @@ const createOrder = async (req, res, next) => {
 		if (!result.success) {
 			return res.status(400).json({ message: result.message });
 		}
-		res.status(200).json({ message: result.message });
+		res.status(200).json({ message: result.message, orderDetail: result.orderDetail });
 	} catch (error) {
 		if (error instanceof CustomError) {
 			next(error);
@@ -23,13 +23,30 @@ const createOrder = async (req, res, next) => {
 	}
 };
 
-const getUserOrder = async (req, res, next) => {
+const getUserOrders = async (req, res, next) => {
 	try {
 		const { _id } = req.user;
 		if (!_id) {
 			return next(new CustomError(ERROR_CODES.INVALID_REQUEST));
 		}
-		const result = await orderService.getUserOrder(_id);
+		const result = await orderService.getUserOrders(_id);
+		if (!result.success) {
+			return res.status(400).json({ message: result.message });
+		}
+		res.status(200).json(result.listOrders);
+	} catch (error) {
+		if (error instanceof CustomError) {
+			next(error);
+		} else {
+			console.error('Error creating cart:', error);
+			next(new CustomError(ERROR_CODES.SERVER_ERROR));
+		}
+	}
+};
+
+const getAllOrders = async (req, res, next) => {
+	try {
+		const result = await orderService.getAllOrders();
 		if (!result.success) {
 			return res.status(400).json({ message: result.message });
 		}
@@ -46,5 +63,6 @@ const getUserOrder = async (req, res, next) => {
 
 module.exports = {
 	createOrder,
-	getUserOrder,
+	getUserOrders,
+	getAllOrders,
 };

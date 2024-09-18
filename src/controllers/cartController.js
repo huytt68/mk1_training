@@ -23,19 +23,19 @@ const createCart = async (req, res, next) => {
 	}
 };
 
-const addProductToCart = async (req, res, next) => {
+const addToCart = async (req, res, next) => {
 	try {
 		const { _id } = req.user;
-		const { product_id } = req.body;
+		const { product_id, quantity } = req.body;
 
 		if (!product_id) {
 			return next(new CustomError(ERROR_CODES.INVALID_REQUEST));
 		}
-		const result = await cartService.addProductToCart(_id, product_id);
+		const result = await cartService.addToCart(_id, product_id, quantity);
 		if (!result.success) {
 			return res.status(400).json({ message: result.message });
 		}
-		res.status(200).json({ message: result.message });
+		res.status(200).json({ message: result.message, product: result.product });
 	} catch (error) {
 		if (error instanceof CustomError) {
 			next(error);
@@ -91,7 +91,7 @@ const getCartItem = async (req, res, next) => {
 
 module.exports = {
 	createCart,
-	addProductToCart,
+	addToCart,
 	getCart,
 	getCartItem,
 };
