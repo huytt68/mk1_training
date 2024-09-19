@@ -27,7 +27,7 @@ const addToCart = async (user_id, product_id, quantity) => {
 		}
 
 		// 2. Check gio hang
-		const cart = await db.Cart.findOne({
+		let cart = await db.Cart.findOne({
 			where: { user_id, status: 'active' },
 		});
 		if (!cart) {

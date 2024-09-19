@@ -1,6 +1,7 @@
 const { where } = require('sequelize');
 const db = require('../models');
 const sendMail = require('../utils/sendMail');
+const sendNoti = require('../utils/sendNotification');
 
 const createOrder = async (user_id) => {
 	try {
@@ -64,10 +65,23 @@ const createOrder = async (user_id) => {
 				quantity: item.quantity,
 			})),
 		};
+
 		// Gui mail cho user
 		await sendMail.sendOrderConfirmationMail(user.email, orderDetail);
 		// Gui noti cho admin
 		await sendMail.sendNewOrderNoti(orderDetail);
+
+		// Push notification
+		const payloadUser = JSON.stringify({
+			title: 'Đơn hàng đã được đặt',
+			body: 'Đơn hàng của bạn đã được đặt thành công.',
+		});
+		const payloadAdmin = JSON.stringify({
+			title: 'Co don hang moi',
+			body: 'Co don hang moi! Hay vao xem ngay!.',
+		});
+		await sendNoti.sendNotiToUserId(user.id, payloadUser);
+		await sendNoti.sendNotiToAdmin(payloadAdmin);
 
 		return {
 			success: true,

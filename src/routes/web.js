@@ -5,6 +5,7 @@ const productCtrl = require('../controllers/productController');
 const userCtrl = require('../controllers/userController');
 const cartCtrl = require('../controllers/cartController');
 const orderCtrl = require('../controllers/orderController');
+const notificationController = require('../controllers/notificationController');
 
 let router = express.Router();
 
@@ -32,6 +33,9 @@ const initRoutes = (app) => {
 	router.post('/order', verifyToken, authorizeRoles('user'), orderCtrl.createOrder);
 	router.get('/order', verifyToken, authorizeRoles('user'), orderCtrl.getUserOrders);
 	router.get('/order/all', verifyToken, authorizeRoles('admin'), orderCtrl.getAllOrders);
+
+	router.post('/subscribe', notificationController.subscribe);
+	router.post('/send', notificationController.sendPushNotification);
 
 	return app.use('/', router);
 };

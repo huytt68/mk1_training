@@ -43,6 +43,7 @@ module.exports = (sequelize, DataTypes) => {
 		User.hasMany(models.Cart, { as: 'cart', foreignKey: 'id' });
 		User.hasMany(models.Order, { as: 'order', foreignKey: 'id' });
 		User.hasMany(models.RefreshToken, { as: 'token', foreignKey: 'id' });
+		User.hasMany(models.Subscription, { as: 'subscription', foreignKey: 'id' });
 	};
 
 	return User;
