@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
 	up: async (queryInterface, Sequelize) => {
-		await queryInterface.createTable('Subscriptions', {
+		await queryInterface.createTable('Tokens', {
 			id: {
 				allowNull: false,
 				autoIncrement: true,
@@ -12,25 +12,13 @@ module.exports = {
 				type: Sequelize.INTEGER,
 				allowNull: false,
 				references: {
-					model: 'Users', // Tên của bảng User
+					model: 'Users',
 					key: 'id',
 				},
 				onUpdate: 'CASCADE',
 				onDelete: 'CASCADE',
 			},
-			endpoint: {
-				type: Sequelize.TEXT,
-				allowNull: false,
-			},
-			expirationTime: {
-				type: Sequelize.DATE,
-				allowNull: true,
-			},
-			p256dh_key: {
-				type: Sequelize.TEXT,
-				allowNull: false,
-			},
-			auth_key: {
+			token: {
 				type: Sequelize.TEXT,
 				allowNull: false,
 			},
@@ -38,6 +26,6 @@ module.exports = {
 	},
 
 	down: async (queryInterface, Sequelize) => {
-		await queryInterface.dropTable('Subscriptions');
+		await queryInterface.dropTable('Tokens');
 	},
 };

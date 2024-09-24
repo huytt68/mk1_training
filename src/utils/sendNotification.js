@@ -1,82 +1,81 @@
-const webpush = require('web-push');
 const db = require('../models');
+var admin = require('firebase-admin');
+var { getMessaging } = require('firebase-admin/messaging');
 require('dotenv').config();
 
-// Thiết lập VAPID keys
-const publicVapidKey = process.env.YOUR_PUBLIC_VAPID_KEY;
-const privateVapidKey = process.env.YOUR_PRIVATE_VAPID_KEY;
+var serviceAccount = require('../config/nodejs-api-6b198-firebase-adminsdk-xui5t-f6fbfc2f74.json');
 
-webpush.setVapidDetails('mailto:huytt68.3@gmail.com', publicVapidKey, privateVapidKey);
+admin.initializeApp({
+	credential: admin.credential.cert(serviceAccount),
+});
 
-const sendNotification = async (subscription, payload) => {
+const messaging = getMessaging();
+
+const sendNotiToUser = async (user_id) => {
 	try {
-		await webpush.sendNotification(subscription, payload);
-		console.log('Notification sent successfully');
-	} catch (error) {
-		console.error('Error sending notification:', error);
-		throw error;
-	}
-};
-
-const sendNotiToUserId = async (user_id, payload) => {
-	try {
-		const subData = await db.Subscription.findOne({ where: { user_id: user_id } });
-		if (!subData) {
+		const tokenObj = await db.Token.findOne({
+			attributes: ['token'],
+			where: { user_id: user_id },
+		});
+		if (!tokenObj) {
 			console.log('Wrong user id');
 			return;
 		}
-		const subscription = {
-			endpoint: subData.endpoint,
-			expirationTime: subData.expirationTime,
-			keys: {
-				p256dh: subData.p256dh_key,
-				auth: subData.auth_key,
+		const message = {
+			notification: {
+				title: 'Đơn hàng đã đặt thành công!',
+				body: 'Tạo đơn hàng thành công! Vui lòng kiểm tra thông tin chi tiết!',
 			},
+			token: tokenObj.dataValues.token,
 		};
-		await webpush.sendNotification(subscription, payload);
+		const response = await messaging.send(message);
+		console.log('Successfully sent message to user: ', response);
+		return response;
 	} catch (error) {
-		console.error('Error sending notification:', error);
+		console.error('Error sending message to user: ', error);
 		throw error;
 	}
 };
 
-const sendNotiToAdmin = async (payload) => {
+const sendNotiToAdmin = async () => {
 	try {
-		const subData = await db.Subscription.findAll({
+		const adminTokens = await db.Token.findAll({
+			attributes: ['token'],
 			include: {
 				model: db.User,
 				as: 'user',
-				attribute: [],
-				include: {
-					model: db.Role,
-					as: 'role',
-					attribute: [],
-					where: { name: 'admin' },
-				},
+				attributes: [],
+				required: true,
+				include: [
+					{
+						model: db.Role,
+						as: 'role',
+						attributes: [],
+						where: { name: 'admin' },
+					},
+				],
 			},
 		});
-		const adminSubscriptions = subData.map((item) => {
-			return {
-				endpoint: item.endpoint,
-				expirationTime: item.expirationTime,
-				keys: {
-					p256dh: item.p256dh_key,
-					auth: item.auth_key,
-				},
-			};
+		const tokens = adminTokens.map((item) => {
+			return item.token;
 		});
-		console.log(adminSubscriptions);
-		for (let subscription of adminSubscriptions) {
-			await sendNotification(subscription, payload);
-		}
+		const message = {
+			notification: {
+				title: 'Có 1 đơn hàng mới!',
+				body: 'Có khách vừa đặt hàng! Hãy kiểm tra!',
+			},
+			tokens: tokens,
+		};
+		const response = await messaging.sendEachForMulticast(message);
+		console.log('Successfully sent message to admins: ', response);
+		return response;
 	} catch (error) {
-		console.error('Error sending notification:', error);
+		console.error('Error sending message to admins: ', error);
 		throw error;
 	}
 };
 
 module.exports = {
-	sendNotification,
-	sendNotiToUserId,
+	sendNotiToUser,
 	sendNotiToAdmin,
 };

@@ -6,10 +6,10 @@ module.exports = {
 			'roles',
 			[
 				{
-					name: 'user',
+					name: 'admin',
 				},
 				{
-					name: 'admin',
+					name: 'user',
 				},
 			],
 			{}

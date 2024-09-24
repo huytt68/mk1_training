@@ -42,8 +42,8 @@ module.exports = (sequelize, DataTypes) => {
 		User.belongsTo(models.Role, { as: 'role', foreignKey: 'role_id' });
 		User.hasMany(models.Cart, { as: 'cart', foreignKey: 'id' });
 		User.hasMany(models.Order, { as: 'order', foreignKey: 'id' });
-		User.hasMany(models.RefreshToken, { as: 'token', foreignKey: 'id' });
-		User.hasMany(models.Subscription, { as: 'subscription', foreignKey: 'id' });
+		User.hasMany(models.RefreshToken, { as: 'rtoken', foreignKey: 'id' });
+		User.hasMany(models.Token, { as: 'token', foreignKey: 'id' });
 	};
 
 	return User;

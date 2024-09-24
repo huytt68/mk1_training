@@ -1,7 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-	const Subscription = sequelize.define(
-		'Subscription',
+	const Token = sequelize.define(
+		'Token',
 		{
 			id: {
 				allowNull: false,
@@ -17,33 +17,21 @@ module.exports = (sequelize, DataTypes) => {
 					key: 'id',
 				},
 			},
-			endpoint: {
-				type: DataTypes.TEXT,
-				allowNull: false,
-			},
-			expirationTime: {
-				type: DataTypes.DATE,
-				allowNull: true,
-			},
-			p256dh_key: {
-				type: DataTypes.TEXT,
-				allowNull: false,
-			},
-			auth_key: {
+			token: {
 				type: DataTypes.TEXT,
 				allowNull: false,
 			},
 		},
-		{ tableName: 'subscriptions', timestamps: false }
+		{ tableName: 'tokens', timestamps: false }
 	);
 
-	Subscription.associate = function (models) {
-		Subscription.belongsTo(models.User, {
+	Token.associate = function (models) {
+		Token.belongsTo(models.User, {
 			as: 'user',
 			foreignKey: 'user_id',
 			onDelete: 'CASCADE',
 		});
 	};
 
-	return Subscription;
+	return Token;
 };

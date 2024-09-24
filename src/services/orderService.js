@@ -66,22 +66,17 @@ const createOrder = async (user_id) => {
 			})),
 		};
 
-		// Gui mail cho user
-		await sendMail.sendOrderConfirmationMail(user.email, orderDetail);
-		// Gui noti cho admin
-		await sendMail.sendNewOrderNoti(orderDetail);
+		try {
+			// send mail
+			await sendMail.sendOrderConfirmationMail(user.email, orderDetail);
+			await sendMail.sendNewOrderNoti(orderDetail);
 
-		// Push notification
-		const payloadUser = JSON.stringify({
-			title: 'Đơn hàng đã được đặt',
-			body: 'Đơn hàng của bạn đã được đặt thành công.',
-		});
-		const payloadAdmin = JSON.stringify({
-			title: 'Co don hang moi',
-			body: 'Co don hang moi! Hay vao xem ngay!.',
-		});
-		await sendNoti.sendNotiToUserId(user.id, payloadUser);
-		await sendNoti.sendNotiToAdmin(payloadAdmin);
+			// Push notification
+			await sendNoti.sendNotiToUser(user_id);
+			await sendNoti.sendNotiToAdmin();
+		} catch (notiError) {
+			console.error('Error sending notification or email:', notiError);
+		}
 
 		return {
 			success: true,

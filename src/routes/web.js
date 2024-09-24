@@ -34,8 +34,7 @@ const initRoutes = (app) => {
 	router.get('/order', verifyToken, authorizeRoles('user'), orderCtrl.getUserOrders);
 	router.get('/order/all', verifyToken, authorizeRoles('admin'), orderCtrl.getAllOrders);
 
-	router.post('/subscribe', notificationController.subscribe);
-	router.post('/send', notificationController.sendPushNotification);
+	router.post('/register-token', verifyToken, notificationController.registerToken);
 
 	return app.use('/', router);
 };
