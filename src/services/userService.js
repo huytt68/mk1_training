@@ -7,6 +7,7 @@ const {
 	generateRefreshToken,
 	decodeRefreshToken,
 } = require('../middlewares/jwt');
+const { config } = require('dotenv');
 
 const register = async (username, password, email) => {
 	try {
@@ -129,35 +130,50 @@ const refreshAccessToken = async (refreshToken) => {
 // 	}
 // };
 
-const logoutUser = async (res, refreshToken) => {
+const logoutUser = async (res, user_id, device_token) => {
 	try {
-		const userId = decodeRefreshToken(refreshToken);
-		const users = await db.RefreshToken.findAll({
-			attributes: ['refresh_token'],
-			where: { user_id: userId },
+		// Do chua gui ve client duoc Refresh Token nen chua gui len lai de xoa dc
+		// Fix sau
+
+		// const users = await db.RefreshToken.findAll({
+		// 	attributes: ['refresh_token'],
+		// 	where: { user_id: user_id },
+		// });
+		// console.log(users.length);
+
+		// if (users.length === 0) {
+		// 	return { success: false, message: 'Invalid refresh token' };
+		// }
+		// // so sanh tung token
+		// for (const user of users) {
+		// 	console.log('1');
+		// 	// So sánh token gửi lên với các token đã mã hóa
+		// 	const isMatch = await bcrypt.compare(refreshToken, user.refresh_token);
+		// 	console.log(isMatch);
+		// 	console.log('2');
+		// 	if (isMatch) {
+		// 		// Xoa refresh token khoi db
+		// 		const result = await db.RefreshToken.destroy({
+		// 			where: { refresh_token: user.dataValues.refresh_token },
+		// 		});
+		// 		if (!result) {
+		// 			return { success: false, message: 'Invalid refresh token' };
+		// 		}
+		// 	}
+		// }
+
+		res.clearCookie('refreshToken');
+		// xoa token FCM
+		const token = await db.Token.destroy({
+			where: { user_id: user_id, device_token: device_token },
 		});
-		if (users.length === 0) {
-			return { success: false, message: 'Invalid refresh token' };
+		if (!token) {
+			return { success: false, message: 'Invalid token FCM' };
 		}
-		// so sanh tung token
-		for (const user of users) {
-			// So sánh token gửi lên với các token đã mã hóa
-			const isMatch = await bcrypt.compare(refreshToken, user.dataValues.refresh_token);
-			if (isMatch) {
-				// Xoa refresh token khoi db
-				const result = await db.RefreshToken.destroy({
-					where: { refresh_token: user.dataValues.refresh_token },
-				});
-				if (!result) {
-					return { success: false, message: 'Invalid refresh token1' };
-				}
-				res.clearCookie('refreshToken');
-				return { success: true, message: 'Logout successful' };
-			}
-		}
+		return { success: true, message: 'Logout successful' };
 	} catch (error) {
-		console.error(TypeError);
-		return { success: false, message: 'Invalid refresh token' };
+		console.error(error);
+		return { success: false, message: 'Error logout' };
 	}
 };
 

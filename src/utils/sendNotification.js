@@ -14,7 +14,7 @@ const messaging = getMessaging();
 const sendNotiToUser = async (user_id) => {
 	try {
 		const tokenObj = await db.Token.findOne({
-			attributes: ['token'],
+			attributes: ['device_token'],
 			where: { user_id: user_id },
 		});
 		if (!tokenObj) {
@@ -26,7 +26,7 @@ const sendNotiToUser = async (user_id) => {
 				title: 'Đơn hàng đã đặt thành công!',
 				body: 'Tạo đơn hàng thành công! Vui lòng kiểm tra thông tin chi tiết!',
 			},
-			token: tokenObj.dataValues.token,
+			token: tokenObj.dataValues.device_token,
 		};
 		const response = await messaging.send(message);
 		console.log('Successfully sent message to user: ', response);
@@ -40,7 +40,7 @@ const sendNotiToUser = async (user_id) => {
 const sendNotiToAdmin = async () => {
 	try {
 		const adminTokens = await db.Token.findAll({
-			attributes: ['token'],
+			attributes: ['device_token'],
 			include: {
 				model: db.User,
 				as: 'user',
@@ -56,8 +56,12 @@ const sendNotiToAdmin = async () => {
 				],
 			},
 		});
+		if (!adminTokens) {
+			console.log('No admin token found');
+			return; // Return early if no admin tokens found to avoid sending empty message to all admins.
+		}
 		const tokens = adminTokens.map((item) => {
-			return item.token;
+			return item.device_token;
 		});
 		const message = {
 			notification: {
@@ -75,7 +79,36 @@ const sendNotiToAdmin = async () => {
 	}
 };
 
+const sendPushNotification = async (deviceTokens, payload) => {
+	try {
+		const message = {
+			notification: payload,
+			tokens: deviceTokens,
+		};
+
+		const response = await messaging.sendEachForMulticast(message);
+		console.log(response);
+		return response;
+	} catch (error) {
+		console.error('Error sending topic noti: ', error);
+		throw error;
+	}
+};
+
+const sendNoti = async (message) => {
+	try {
+		const response = await messaging.send(message);
+		console.log(response);
+		return response;
+	} catch (error) {
+		console.error('Error sending noti: ', error);
+		throw error;
+	}
+};
+
 module.exports = {
 	sendNotiToUser,
 	sendNotiToAdmin,
+	sendPushNotification,
+	sendNoti,
 };

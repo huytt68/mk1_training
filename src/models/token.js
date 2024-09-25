@@ -17,15 +17,19 @@ module.exports = (sequelize, DataTypes) => {
 					key: 'id',
 				},
 			},
-			token: {
+			device_token: {
 				type: DataTypes.TEXT,
 				allowNull: false,
+			},
+			created_at: {
+				type: DataTypes.DATE,
+				defaultValue: DataTypes.NOW,
 			},
 		},
 		{ tableName: 'tokens', timestamps: false }
 	);
 
-	Token.associate = function (models) {
+	Token.associate = (models) => {
 		Token.belongsTo(models.User, {
 			as: 'user',
 			foreignKey: 'user_id',

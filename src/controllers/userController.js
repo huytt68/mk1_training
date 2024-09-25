@@ -67,12 +67,16 @@ const refreshToken = async (req, res, next) => {
 };
 
 const logout = async (req, res, next) => {
-	const refreshToken = req.cookies.refreshToken;
-	if (!refreshToken) {
+	const { _id } = req.user;
+	const { device_token } = req.body;
+	if (!_id) {
 		return next(new CustomError(ERROR_CODES.INVALID_REQUEST));
 	}
 	try {
-		const result = await userService.logoutUser(res, refreshToken); // Xóa cookie chứa Refresh Token
+		const result = await userService.logoutUser(res, _id, device_token);
+		if (!result.success) {
+			return res.status(500).json({ message: result.message });
+		}
 		return res.status(200).json({ message: result.message });
 	} catch (error) {
 		if (error instanceof CustomError) {

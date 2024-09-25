@@ -23,7 +23,7 @@ const initRoutes = (app) => {
 	router.post('/register', userCtrl.register);
 	router.post('/login', userCtrl.loginUser);
 	router.post('/refreshtoken', userCtrl.refreshToken);
-	router.post('/logout', userCtrl.logout);
+	router.post('/logout', verifyToken, userCtrl.logout);
 
 	router.post('/cart', verifyToken, authorizeRoles('user'), cartCtrl.createCart);
 	router.post('/cart/add', verifyToken, authorizeRoles('user'), cartCtrl.addToCart);
@@ -35,6 +35,8 @@ const initRoutes = (app) => {
 	router.get('/order/all', verifyToken, authorizeRoles('admin'), orderCtrl.getAllOrders);
 
 	router.post('/register-token', verifyToken, notificationController.registerToken);
+	router.post('/subscribe-topic', verifyToken, notificationController.subscribeTopicNew);
+	router.post('/send-notification', verifyToken, notificationController.sendTopicNotificationNew);
 
 	return app.use('/', router);
 };
