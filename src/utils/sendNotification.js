@@ -98,7 +98,7 @@ const sendPushNotification = async (deviceTokens, payload) => {
 const sendNoti = async (message) => {
 	try {
 		const response = await messaging.send(message);
-		console.log(response);
+		console.log('RESPONSE: ', response);
 		return response;
 	} catch (error) {
 		console.error('Error sending noti: ', error);

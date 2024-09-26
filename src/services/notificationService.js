@@ -48,7 +48,7 @@ const subscribeTopic = async (user_id, topic_name) => {
 const subscribeTopicNew = async (topic, token) => {
 	try {
 		await subTopic.subscribeTokenToTopic(token, topic);
-		return { success: true, message: `Subscribe ${token} to ${topic} successfully` };
+		return { success: true, message: `Subscribe ${topic} successfully!` };
 	} catch (error) {
 		console.error('Error:', error);
 		throw error;
@@ -95,8 +95,10 @@ const sendTopicNotificationNew = async (topic, title, body) => {
 			},
 			topic: topic,
 		};
+		console.log(message);
 		try {
-			await sendNoti.sendNoti(message);
+			const result = await sendNoti.sendNoti(message);
+			console.log('AT SERVICE: ', result);
 		} catch (notiError) {
 			console.error('Error sending notification:', notiError);
 			return { success: false, message: 'Send noti failed' };

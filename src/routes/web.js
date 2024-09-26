@@ -5,7 +5,8 @@ const productCtrl = require('../controllers/productController');
 const userCtrl = require('../controllers/userController');
 const cartCtrl = require('../controllers/cartController');
 const orderCtrl = require('../controllers/orderController');
-const notificationController = require('../controllers/notificationController');
+const notiCtrl = require('../controllers/notificationController');
+const checkoutCtrl = require('../controllers/checkoutController');
 
 let router = express.Router();
 
@@ -34,9 +35,12 @@ const initRoutes = (app) => {
 	router.get('/order', verifyToken, authorizeRoles('user'), orderCtrl.getUserOrders);
 	router.get('/order/all', verifyToken, authorizeRoles('admin'), orderCtrl.getAllOrders);
 
-	router.post('/register-token', verifyToken, notificationController.registerToken);
-	router.post('/subscribe-topic', verifyToken, notificationController.subscribeTopicNew);
-	router.post('/send-notification', verifyToken, notificationController.sendTopicNotificationNew);
+	router.post('/register-token', verifyToken, notiCtrl.registerToken);
+	router.post('/subscribe-topic', verifyToken, notiCtrl.subscribeTopicNew);
+	router.post('/send-notification', verifyToken, notiCtrl.sendTopicNotificationNew);
+
+	router.post('/checkout', checkoutCtrl.createPaymentUrl);
+	router.get('/vnpay_ipn', checkoutCtrl.getIPNInfo);
 
 	return app.use('/', router);
 };
