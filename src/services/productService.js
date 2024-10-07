@@ -34,7 +34,7 @@ const getProductById = async (pid) => {
 			where: { id: pid },
 			raw: true,
 		});
-		return product;
+		return product[0];
 	} catch (error) {
 		console.error('Error fetching all products:', error);
 		throw error;

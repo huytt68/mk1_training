@@ -103,7 +103,7 @@ const sendTopicNotificationNew = async (topic, title, body) => {
 			console.error('Error sending notification:', notiError);
 			return { success: false, message: 'Send noti failed' };
 		}
-		return { success: true, message: 'Send topic notification 2 successfully!' };
+		return { success: true, message: 'Send topic notification by FCM topic successfully!' };
 	} catch (error) {
 		console.error('Error:', error);
 		throw error;

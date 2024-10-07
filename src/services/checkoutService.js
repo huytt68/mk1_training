@@ -2,6 +2,7 @@ const db = require('../models');
 const crypto = require('crypto');
 let querystring = require('qs');
 const moment = require('moment');
+require('dotenv').config();
 
 function sortObject(obj) {
 	let sorted = {};
@@ -20,8 +21,8 @@ function sortObject(obj) {
 }
 
 const createPaymentUrl = async (amount, orderInfo, returnUrl) => {
-	const tmnCode = 'TC59NATY';
-	const secretKey = 'QUKDKKNOATQJURXAADEBNAZDBMVVOSPF';
+	const tmnCode = process.env.VNP_TMNCODE;
+	const secretKey = process.env.VNP_SECRET;
 	let vnpUrl = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html';
 
 	let date = new Date();
@@ -33,10 +34,11 @@ const createPaymentUrl = async (amount, orderInfo, returnUrl) => {
 		vnp_Locale: 'vn',
 		vnp_CurrCode: 'VND',
 		vnp_TxnRef: Date.now(),
-		vnp_OrderInfo: 'test',
+		vnp_OrderInfo: orderInfo,
 		vnp_OrderType: 'other',
-		vnp_Amount: 10000 * 100,
-		vnp_ReturnUrl: 'http://localhost:3000/',
+		vnp_Amount: amount * 100,
+		// vnp_ReturnUrl: 'http://localhost:3000/vnpay-return',
+		vnp_ReturnUrl: returnUrl,
 		vnp_IpAddr: '127.0.0.1',
 		vnp_CreateDate: createDate,
 	};
@@ -48,8 +50,7 @@ const createPaymentUrl = async (amount, orderInfo, returnUrl) => {
 	let signed = hmac.update(new Buffer(signData, 'utf-8')).digest('hex');
 	vnpParams['vnp_SecureHash'] = signed;
 	vnpUrl += '?' + querystring.stringify(vnpParams, { encode: false });
-
-	return vnpUrl;
+	return { paymentUrl: vnpUrl };
 };
 
 const getIPNInfo = async (amount, orderInfo, returnUrl) => {
