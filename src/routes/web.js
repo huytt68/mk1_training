@@ -5,6 +5,8 @@ const productCtrl = require('../controllers/productController');
 const userCtrl = require('../controllers/userController');
 const cartCtrl = require('../controllers/cartController');
 const orderCtrl = require('../controllers/orderController');
+const notiCtrl = require('../controllers/notificationController');
+const checkoutCtrl = require('../controllers/checkoutController');
 
 let router = express.Router();
 
@@ -22,7 +24,7 @@ const initRoutes = (app) => {
 	router.post('/register', userCtrl.register);
 	router.post('/login', userCtrl.loginUser);
 	router.post('/refreshtoken', userCtrl.refreshToken);
-	router.post('/logout', userCtrl.logout);
+	router.post('/logout', verifyToken, userCtrl.logout);
 
 	router.post('/cart', verifyToken, authorizeRoles('user'), cartCtrl.createCart);
 	router.post('/cart/add', verifyToken, authorizeRoles('user'), cartCtrl.addToCart);
@@ -32,6 +34,12 @@ const initRoutes = (app) => {
 	router.post('/order', verifyToken, authorizeRoles('user'), orderCtrl.createOrder);
 	router.get('/order', verifyToken, authorizeRoles('user'), orderCtrl.getUserOrders);
 	router.get('/order/all', verifyToken, authorizeRoles('admin'), orderCtrl.getAllOrders);
+
+	router.post('/register-token', verifyToken, notiCtrl.registerToken);
+	router.post('/subscribe-topic', verifyToken, notiCtrl.subscribeTopicNew);
+	router.post('/send-notification', verifyToken, notiCtrl.sendTopicNotificationNew);
+
+	router.get('/vnpay_ipn', checkoutCtrl.getIPNInfo);
 
 	return app.use('/', router);
 };

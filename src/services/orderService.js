@@ -1,8 +1,10 @@
 const { where } = require('sequelize');
 const db = require('../models');
 const sendMail = require('../utils/sendMail');
+const sendNoti = require('../utils/sendNotification');
+const paymentUrl = require('../utils/paymentUrl');
 
-const createOrder = async (user_id) => {
+const createOrder = async (user_id, returnUrl) => {
 	try {
 		// 1. Check gio hang ton tai
 		const cart = await db.Cart.findOne({ where: { user_id, status: 'active' } });
@@ -64,15 +66,38 @@ const createOrder = async (user_id) => {
 				quantity: item.quantity,
 			})),
 		};
-		// Gui mail cho user
-		await sendMail.sendOrderConfirmationMail(user.email, orderDetail);
-		// Gui noti cho admin
-		await sendMail.sendNewOrderNoti(orderDetail);
+
+		try {
+			// send mail
+			await sendMail.sendOrderConfirmationMail(user.email, orderDetail);
+			await sendMail.sendNewOrderNoti(orderDetail);
+
+			// Push notification
+			await sendNoti.sendNotiToUser(user_id);
+			await sendNoti.sendNotiToAdmin();
+		} catch (notiError) {
+			console.error('Error sending notification or email:', notiError);
+		}
+		const orderInfo = `Thanh toan don hang #${order.id}`;
+		const clientReturnUrl = returnUrl;
+		console.log(clientReturnUrl);
+		// Tao payment url
+		const paymentUrlResult = await paymentUrl.createPaymentUrl(
+			orderDetail.total_amount,
+			order.id,
+			orderInfo,
+			clientReturnUrl
+		);
+		console.log(paymentUrlResult);
+		if (!paymentUrlResult) {
+			throw new Error('Failed to create payment URL');
+		}
 
 		return {
 			success: true,
 			message: 'Order created successfully! Please check your email to corfirm your order!',
-			orderDetail,
+			orderDetail: orderDetail,
+			paymentUrl: paymentUrlResult,
 		};
 	} catch (error) {
 		console.error('Error creating cart:', error);

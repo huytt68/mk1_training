@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
 			role_id: {
 				type: DataTypes.INTEGER,
 				allowNull: false,
-				defaultValue: 1,
+				defaultValue: 2,
 			},
 			created_at: {
 				type: DataTypes.DATE,
@@ -42,7 +42,9 @@ module.exports = (sequelize, DataTypes) => {
 		User.belongsTo(models.Role, { as: 'role', foreignKey: 'role_id' });
 		User.hasMany(models.Cart, { as: 'cart', foreignKey: 'id' });
 		User.hasMany(models.Order, { as: 'order', foreignKey: 'id' });
-		User.hasMany(models.RefreshToken, { as: 'token', foreignKey: 'id' });
+		User.hasMany(models.RefreshToken, { as: 'rtoken', foreignKey: 'id' });
+		User.hasMany(models.Token, { as: 'token', foreignKey: 'id' });
+		User.hasMany(models.UserSubscription, { as: 'subscriptions', foreignKey: 'id' });
 	};
 
 	return User;

@@ -18,3 +18,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# firebase admin json
+nodejs-api-6b198-firebase-adminsdk-xui5t-f6fbfc2f74.json
