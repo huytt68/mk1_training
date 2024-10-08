@@ -1,10 +1,9 @@
 const db = require('../models');
 const crypto = require('crypto');
 let querystring = require('qs');
-const moment = require('moment');
 require('dotenv').config();
 
-function sortObject(obj) {
+const sortObject = (obj) => {
 	let sorted = {};
 	let str = [];
 	let key;
@@ -18,46 +17,44 @@ function sortObject(obj) {
 		sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, '+');
 	}
 	return sorted;
-}
-
-const createPaymentUrl = async (amount, orderInfo, returnUrl) => {
-	const tmnCode = process.env.VNP_TMNCODE;
-	const secretKey = process.env.VNP_SECRET;
-	let vnpUrl = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html';
-
-	let date = new Date();
-	let createDate = moment(date).format('YYYYMMDDHHmmss');
-	let vnpParams = {
-		vnp_Version: '2.1.0',
-		vnp_Command: 'pay',
-		vnp_TmnCode: tmnCode,
-		vnp_Locale: 'vn',
-		vnp_CurrCode: 'VND',
-		vnp_TxnRef: Date.now(),
-		vnp_OrderInfo: orderInfo,
-		vnp_OrderType: 'other',
-		vnp_Amount: amount * 100,
-		// vnp_ReturnUrl: 'http://localhost:3000/vnpay-return',
-		vnp_ReturnUrl: returnUrl,
-		vnp_IpAddr: '127.0.0.1',
-		vnp_CreateDate: createDate,
-	};
-
-	vnpParams = sortObject(vnpParams);
-
-	let signData = querystring.stringify(vnpParams, { encode: false });
-	let hmac = crypto.createHmac('sha512', secretKey);
-	let signed = hmac.update(new Buffer(signData, 'utf-8')).digest('hex');
-	vnpParams['vnp_SecureHash'] = signed;
-	vnpUrl += '?' + querystring.stringify(vnpParams, { encode: false });
-	return { paymentUrl: vnpUrl };
 };
 
-const getIPNInfo = async (amount, orderInfo, returnUrl) => {
-	let vnp_Params = req.query;
+const getIPNInfo = async (vnp_Params) => {
+	const secureHash = vnp_Params['vnp_SecureHash'];
+
+	delete vnp_Params['vnp_SecureHash'];
+	delete vnp_Params['vnp_SecureHashType'];
+
+	vnp_Params = sortObject(vnp_Params);
+	let secretKey = process.env.VNP_SECRET;
+	let signData = querystring.stringify(vnp_Params, { encode: false });
+	let hmac = crypto.createHmac('sha512', secretKey);
+	let signed = hmac.update(new Buffer(signData, 'utf-8')).digest('hex');
+
+	if (secureHash === signed) {
+		const orderId = vnp_Params['vnp_TxnRef'];
+		const paymentStatus = vnp_Params['vnp_TransactionStatus'];
+
+		console.log('Transaction is valid, processing order...');
+		//Kiem tra du lieu co hop le khong, cap nhat trang thai don hang va gui ket qua cho VNPAY theo dinh dang duoi
+		if (paymentStatus === '00') {
+			// Giao dịch thành công
+			try {
+				const order = await db.Order.findOne({ where: { id: orderId } });
+				if (order) {
+					order.status = 'paid';
+					await order.save();
+				}
+			} catch (error) {
+				console.error('Error updating order status:', error);
+			}
+		}
+		return { success: true, RspCode: '00', Message: 'success' };
+	} else {
+		return { success: true, RspCode: '97', Message: 'Fail checksum' };
+	}
 };
 
 module.exports = {
-	createPaymentUrl,
 	getIPNInfo,
 };

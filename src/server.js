@@ -1,5 +1,6 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 const cors = require('cors');
 const connectDB = require('./config/connectDB');
 const initRoutes = require('./routes/web');
@@ -15,6 +16,8 @@ app.use(
 	})
 );
 app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 app.use(cookieParser());
 
 connectDB();

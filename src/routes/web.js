@@ -39,7 +39,6 @@ const initRoutes = (app) => {
 	router.post('/subscribe-topic', verifyToken, notiCtrl.subscribeTopicNew);
 	router.post('/send-notification', verifyToken, notiCtrl.sendTopicNotificationNew);
 
-	router.post('/checkout', checkoutCtrl.createPaymentUrl);
 	router.get('/vnpay_ipn', checkoutCtrl.getIPNInfo);
 
 	return app.use('/', router);
